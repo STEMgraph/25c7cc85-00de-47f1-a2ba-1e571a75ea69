@@ -1,0 +1,129 @@
+\begin{challenge}
+    \chatitle{Evaluating Complex Expressions with the POSIX Shell}
+    \begin{chadescription}
+        In the \href{https://github.com/STEMgraph/ac584d6d-1397-49d9-8319-85e9fbd4b765}{Basic Evaluation Challenge} we have learned how to evaluate simple expressions.
+        In this challenge we will learn how to use the POSIX Shell to evaluate more complex expressions.
+        The POSIX Shell is a standardized command line interface to the operating system.
+        What the POSIX standard includes, will be the topic of a future challenge.
+        In order to write more complex commands than the previous ones, we will have to wrestle with the concept of identifiers. 
+        An identifier is a name that is used to refer to a variable, a function, a type, a value, or something else.
+        These identifers can be user-defined or predefined.
+        While there are already many predefined identifiers available in your shell-environment, you can also define your own identifiers.
+        Defining own identifiers is useful for more complex commands.
+        One of the philosophical approaches in software development is called divide-and-conquer.
+        This roughly translates to the idea, that a program should be divided into smaller parts.
+        These smaller parts should be as simple as possible and independent of each other.
+        Every individual part should also be addressable by a well-chosen name, its identifier.
+        Identifiers allow us to store parts of our program in memory and to access them later.
+        Without going into too much detail ahead of time, we will be working with function and variable identifiers in this challenge.
+        In the \href{https://github.com/STEMgraph/ac584d6d-1397-49d9-8319-85e9fbd4b765}{Basic Evaluation Challenge} we used the term expression, without a clear definition, so let's define it now:
+        \begin{definition}
+            An expression is a combination of operators and operands, that can be reduced to a value. 
+            We call this reduction the evaluation of the expression.
+            Predefined arrangements of operators and operands, where the operands are replaced with variable values are called functions.
+            A variable is a piece of RAM, that is used to store a value and has an identifier.
+        \end{definition}
+
+        In this challenge we will: 
+        \begin{enumerate}
+            \item set identifiers in our shell-environment
+            \item we will combine identifiers to form more complex commands
+            \item we will investigate the lifetime of identifiers
+        \end{enumerate}
+    \end{chadescription}
+
+    \begin{task}
+        Open your terminal-emulator on your linux system - or any other POSIX system.
+        We have worked with expressions already and know, that our shell can evaluate them for us.
+        Consecutively we call the system in which we are working now also a command line interpreter.
+        Because it interprets our commands, like \textit{"evaluate this expression!"}.
+        In addition to the evaluation, our shell can also memorize certain pieces of information.
+        The process of making our shell memorize information is called \textit{binding}.
+        Binding defines a relationship between an identifier and a piece of information, such as a value or a function.        
+        \begin{questions}
+            \item Let's bind a value to the identifier \texttt{x}. Type \texttt{x=1} and press \texttt{Enter}. The identifier called \texttt{x} is now related to a piece of RAM, which the value 1 has been assigned to.
+            \item Type \texttt{echo \$x} and press \texttt{Enter}. What is the output?
+            \item Let's bind a second value to the identifier \texttt{y}. Choose any value you like. Use the \texttt{echo} command to print the value.
+            \item We will now evaluate an expression with our identifiers. Type \texttt{expr \$x + \$y} and press \texttt{Enter}. What is the output?
+        \end{questions}
+    \end{task}
+
+    \begin{task}
+        We have now seen how to bind values to identifiers.
+        We can also bind functions to identifiers.
+        Type the following lines and press \texttt{Enter} after each line:
+        \begin{lstlisting}
+            function sum() {
+            echo $(( $1 + $2 ))
+            }
+        \end{lstlisting}
+        Inside of a shell-function, the identifiers \texttt{1} and \texttt{2} are used to store the values of the function parameters.
+        Function parameters are arguments, that are passed to the function when it is called.
+        The binding to the identifiers \texttt{1} and \texttt{2} is called binding by position.
+        The identifiers are only valid inside of the function, and while the function is executed. 
+        For that reason, the identifiers \texttt{1}, \texttt{2} and so on, are called local identifiers. 
+        Because they are local to the function, they are not visible outside of the function.
+        In contrast to local identifiers, we call identifiers that are visible outside of the function, global identifiers.
+        \begin{questions}
+            \item In order to see the contents of a function, you can use the \texttt{declare} command. Type \texttt{declare -f sum} and press \texttt{Enter}.
+            \item Let's test our function. Type \texttt{sum 1 2} and press \texttt{Enter}. What is the output?
+            \item We will now evaluate an expression with our value-identifiers (or variables). Type \texttt{sum \$x \$y} and press \texttt{Enter}. What is the output?
+            \item Writing a new function, that uses the same identifier as the first one, will overwrite it.
+        \end{questions}
+    \end{task}
+
+    \begin{task}
+        We can also store the output of an expression behind an identifier.
+        The only thing that we need to make sure is, that the expression is evaluated, befor we can store the output in an identifier.
+        For this, we will use parentheses, just like in regular math. 
+        In addtion to this we want to express to the shell, that it's not just supposed to store the parentheses, but to actually evaluate the expression.
+        We use the \texttt{\$}-symbol to express to the command line interpreter, that whatever follows is supposed to be evaluated.
+        \begin{questions}
+            \item Type \texttt{d=\$(expr 1 + 1)} and press \texttt{Enter}. See the result by typing \texttt{echo \$d}. What is the output?
+            \item Type \texttt{e=\$(expr \$x + \$y)} and press \texttt{Enter}. See the result by typing \texttt{echo \$e}. What is the output?
+            \item Type \texttt{f=\$(sum \$x \$y)} and press \texttt{Enter}. See the result by typing \texttt{echo \$f}. What is the output?
+        \end{questions}
+    \end{task}
+
+    \begin{task}
+        Function identifiers can also be used in later defined functions.
+        Let's define a function first, that prints a string, which is given by a positional parameter.
+        \begin{lstlisting}
+            function hello() {
+            echo "Hello $1"
+            }
+        \end{lstlisting}
+        After writing the closing brace, we get back to the original prompt. 
+        Let's define a second function, that calls the first one.
+        \begin{lstlisting}
+            function world() {
+            hello "world"    
+            }
+        \end{lstlisting}
+        
+        \begin{questions}
+            \item Execute the two functions. Why can the second function call the first one?
+            \item Define a third function called \texttt{world2}, that calls \texttt{hello2 "world"}.
+            \item Define a fourth function called \texttt{hello2}, that functions exactly like \texttt{hello}. Now \texttt{hello2} was defined after \texttt{world2} was defined. Does this change anything and why?
+        \end{questions}
+    \end{task}
+
+    \begin{task}
+        While we are already in a function, we may also want to create intermediate results.
+        For this reason, we can create more identifiers that are local to the function.
+        Let's define a function that prints the sum of the square of two numbers.
+        \begin{lstlisting}
+            function squares() {
+            local square1=$(( $1 * $1 ))
+            local square2=$(( $2 * $2 ))
+            echo $(($square1 + $square2))
+            }
+        \end{lstlisting}
+        \texttt{$(( ))} is a command that is used to evaluate an arithmetic expression, within a function.
+        \begin{questions}
+            
+            
+        \end{questions}
+    \end{task}
+\end{challenge}
+    
